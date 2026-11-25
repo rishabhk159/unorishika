@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#080B11] text-slate-100 font-sans min-h-screen overflow-x-hidden;
+  }
+}
+
+/* Custom game scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+::-webkit-scrollbar-thumb {
+  background: #232f42;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* UNO 3D & card styles */
+.card-perspective {
+  perspective: 1200px;
+}
+
+.uno-glow-red {
+  filter: drop-shadow(0 0 14px rgba(237, 28, 36, 0.8));
+}
+.uno-glow-yellow {
+  filter: drop-shadow(0 0 14px rgba(255, 222, 0, 0.8));
+}
+.uno-glow-green {
+  filter: drop-shadow(0 0 14px rgba(0, 166, 81, 0.8));
+}
+.uno-glow-blue {
+  filter: drop-shadow(0 0 14px rgba(0, 84, 166, 0.8));
+}
+
+/* Table background & felt styles */
+.bg-radial-vignette {
+  background: radial-gradient(circle at 50% 50%, #162438 0%, #0d1522 55%, #070a0f 100%);
+}
+
+.bg-table-felt {
+  background: radial-gradient(ellipse at center, #1b3a2f 0%, #0d231b 60%, #07130f 100%);
+}
+
+.glass-panel {
+  background: rgba(18, 24, 38, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(26, 35, 51, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+/* Dynamic Card Motion Keyframes */
+@keyframes cardFlyPlay {
+  0% {
+    transform: translateY(120px) scale(0.85) rotate(-4deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes cardFlyDraw {
+  0% {
+    transform: translateY(-80px) scale(0.6);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes colorBurst {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-card-fly-play {
+  animation: cardFlyPlay 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-card-fly-draw {
+  animation: cardFlyDraw 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-color-burst {
+  animation: colorBurst 0.5s ease-out forwards;
+}
+
+.animate-scaleUp {
+  animation: scaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
