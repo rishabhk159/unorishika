@@ -8,20 +8,6 @@
     ],
     "rewrites": [
       {
-        "source": "/socket.io/**",
-        "run": {
-          "serviceId": "uno-rishika-backend",
-          "region": "us-central1"
-        }
-      },
-      {
-        "source": "/api/**",
-        "run": {
-          "serviceId": "uno-rishika-backend",
-          "region": "us-central1"
-        }
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

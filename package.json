@@ -10,11 +10,13 @@
     "server": "node backend/server.js",
     "server:dev": "node --watch backend/server.js",
     "dev:all": "concurrently \"npm run server:dev\" \"npm run dev\"",
-    "start:all": "concurrently \"npm run server\" \"npm run dev\""
+    "start:all": "concurrently \"npm run server\" \"npm run dev\"",
+    "deploy": "npm run build && npx firebase-tools deploy --only hosting"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",
     "concurrently": "^9.2.5",
+    "firebase": "^13.4.0",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
