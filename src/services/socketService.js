@@ -10,7 +10,12 @@ import { generateRoomCode } from './mockUnoEngine';
 const getBackendUrl = () => {
   if (import.meta.env.VITE_BACKEND_URL) return import.meta.env.VITE_BACKEND_URL;
   if (typeof window !== 'undefined' && window.location.hostname) {
-    return `${window.location.protocol}//${window.location.hostname}:5000`;
+    // If running in local development (Vite dev server on port 3000/5173), connect to local backend port 5000
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '3000') {
+      return `${window.location.protocol}//${window.location.hostname}:5000`;
+    }
+    // In production (Firebase Hosting with Cloud Run rewrites), use same origin
+    return window.location.origin;
   }
   return 'http://localhost:5000';
 };
