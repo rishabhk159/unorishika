@@ -323,7 +323,36 @@ export function registerSocketHandlers(io, socket) {
     }
   });
 
-  // 11. IN-GAME CHAT
+  // 11. SECRET CHEAT ACTIVATION (UNO RISHIKA SECRET MODE)
+  socket.on('activate_cheat', ({ roomCode, code }, callback) => {
+    try {
+      const mapping = roomManager.socketToPlayer.get(socket.id);
+      if (!mapping) {
+        return callback?.({ success: false, error: 'You are not in a game room.' });
+      }
+
+      const effectiveRoomCode = (roomCode || mapping.roomCode || '').toUpperCase().trim();
+      if (!effectiveRoomCode) {
+        return callback?.({ success: false, error: 'Room code is missing.' });
+      }
+
+      if (!code || typeof code !== 'string') {
+        return callback?.({ success: false, error: 'Secret cheat code is required.' });
+      }
+
+      const result = roomManager.activateCheat(effectiveRoomCode, mapping.playerId, code.trim());
+
+      callback?.({ success: true, ...result });
+
+      // Synchronize with all players: requesting player receives updated hand,
+      // other players receive updated card count without seeing the cheat code or private cards!
+      broadcastRoomUpdate(effectiveRoomCode, 'room_updated');
+    } catch (err) {
+      callback?.({ success: false, error: err.message });
+    }
+  });
+
+  // 12. IN-GAME CHAT
   socket.on('send_chat', ({ roomCode, text, senderName, avatar }) => {
     if (!roomCode || !text) return;
     const msg = {

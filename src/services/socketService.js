@@ -544,6 +544,23 @@ class SocketService {
 
     return message;
   }
+
+  activateCheat(roomCode, code) {
+    return new Promise((resolve, reject) => {
+      const targetRoom = (roomCode || this.currentRoom?.code || '').toUpperCase().trim();
+      if (!this.socket || !this.socket.connected) {
+        return reject(new Error('Server is currently offline. Please wait for reconnection.'));
+      }
+
+      this.socket.emit('activate_cheat', { roomCode: targetRoom, code }, (response) => {
+        if (response?.success) {
+          resolve(response);
+        } else {
+          reject(new Error(response?.error || 'Failed to activate cheat code.'));
+        }
+      });
+    });
+  }
 }
 
 export const socketService = new SocketService();

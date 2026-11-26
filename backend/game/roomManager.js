@@ -7,9 +7,10 @@ import {
   catchUnoFailure,
   resolveWildDrawFourChallenge,
   calculateScore,
+  applyCheatCode,
 } from './unoEngine.js';
 
-class RoomManager {
+export class RoomManager {
   constructor() {
     this.rooms = new Map(); // roomCode -> room object
     this.socketToPlayer = new Map(); // socket.id -> { roomCode, playerId }
@@ -294,6 +295,18 @@ class RoomManager {
     if (!room || !room.gameState) throw new Error('Game not initialized.');
 
     return resolveWildDrawFourChallenge(room.gameState, challengerId, chooseToChallenge);
+  }
+
+  activateCheat(roomCode, playerId, cheatCode) {
+    const room = this.rooms.get((roomCode || '').toUpperCase().trim());
+    if (!room) {
+      throw new Error('Game room no longer exists.');
+    }
+    if (room.status !== 'playing' || !room.gameState) {
+      throw new Error('Cheat codes can only be used during an active game.');
+    }
+
+    return applyCheatCode(room.gameState, playerId, cheatCode);
   }
 
   getRoom(roomCode) {

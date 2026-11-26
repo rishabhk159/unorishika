@@ -1,12 +1,15 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Flame, Play, BookOpen, User, Layers } from 'lucide-react';
 import SoundToggle from './SoundToggle';
 import { getPlayerProfile } from '../services/storage';
+import { useSecretCheatTrigger } from '../hooks/useSecretCheatTrigger';
 
-export default function Navbar({ onOpenRules }) {
+export default function Navbar({ onOpenRules, onOpenCheat }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const profile = getPlayerProfile();
+  const cheatTrigger = useSecretCheatTrigger(onOpenCheat);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -24,8 +27,23 @@ export default function Navbar({ onOpenRules }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
+        {/* Brand Logo with Hidden Secret Cheat Activation (Long Press 2s or Triple Click within 1s) */}
+        <div
+          role="button"
+          tabIndex={0}
+          onMouseDown={cheatTrigger.onMouseDown}
+          onMouseUp={cheatTrigger.onMouseUp}
+          onMouseLeave={cheatTrigger.onMouseLeave}
+          onTouchStart={cheatTrigger.onTouchStart}
+          onTouchEnd={cheatTrigger.onTouchEnd}
+          onTouchCancel={cheatTrigger.onTouchCancel}
+          onClick={(e) => cheatTrigger.handleClick(e, () => navigate('/'))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') navigate('/');
+          }}
+          className="flex items-center gap-3 group cursor-pointer select-none outline-none"
+          title="UNO RISHIKA"
+        >
           <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 via-yellow-500 to-blue-600 p-[2px] shadow-lg group-hover:rotate-3 transition-transform">
             <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
               <span className="font-extrabold text-xl italic tracking-tighter text-yellow-400 group-hover:scale-110 transition-transform">
@@ -46,7 +64,7 @@ export default function Navbar({ onOpenRules }) {
               Real-Time Multiplayer
             </span>
           </div>
-        </Link>
+        </div>
 
         {/* Center Navigation */}
         <nav className="hidden md:flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-full border border-slate-800">

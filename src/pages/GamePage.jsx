@@ -22,11 +22,13 @@ import { useSoundEffects } from '../hooks/useSoundEffects';
 import { getPlayerProfile, updatePlayerStats } from '../services/storage';
 import { isValidMove } from '../services/mockUnoEngine';
 import { socketService } from '../services/socketService';
+import { useSecretCheatTrigger } from '../hooks/useSecretCheatTrigger';
 
-export default function GamePage({ onOpenRules }) {
+export default function GamePage({ onOpenRules, onOpenCheat }) {
   const { roomCode = '' } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const cheatTrigger = useSecretCheatTrigger(onOpenCheat);
   const { 
     playClick, playCardPlay, playCardDraw, 
     playUnoCall, playSpecialAction, playTurnAlert, playWin, playError 
@@ -457,6 +459,24 @@ export default function GamePage({ onOpenRules }) {
       {/* TOP HEADER CONTROLS */}
       <div className="relative z-30 w-full px-4 py-3 flex items-center justify-between glass-panel border-b border-slate-800">
         <div className="flex items-center gap-3">
+          {/* Secret Cheat Triggerable Logo */}
+          <div
+            role="button"
+            tabIndex={0}
+            onMouseDown={cheatTrigger.onMouseDown}
+            onMouseUp={cheatTrigger.onMouseUp}
+            onMouseLeave={cheatTrigger.onMouseLeave}
+            onTouchStart={cheatTrigger.onTouchStart}
+            onTouchEnd={cheatTrigger.onTouchEnd}
+            onTouchCancel={cheatTrigger.onTouchCancel}
+            onClick={(e) => cheatTrigger.handleClick(e)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-yellow-400 text-xs font-bold cursor-pointer select-none transition group"
+            title="UNO RISHIKA"
+          >
+            <span className="font-extrabold italic text-yellow-400 group-hover:scale-105 transition-transform">UNO</span>
+            <span className="font-black text-white font-display">RISHIKA</span>
+          </div>
+
           <button
             onClick={handleCopyCode}
             title="Click to copy room code"

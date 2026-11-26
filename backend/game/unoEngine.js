@@ -511,3 +511,106 @@ export function calculateScore(gameState, winnerId) {
   });
   return score;
 }
+
+/**
+ * UNO RISHIKA SECRET CHEAT MODE Engine Logic
+ * 
+ * Codes:
+ * - '2420': Gives 4 additional normal playable UNO cards.
+ * - '1414': Gives 1 Wild card (allows Red, Blue, Green, Yellow selection).
+ * - '1212': Gives 1 Draw Two card (random color from Red, Blue, Green, Yellow).
+ */
+export function generateNormalUnoCard() {
+  const color = CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length)];
+  const isSpecial = Math.random() < 0.25; // 25% chance of action card (skip/reverse/draw2)
+  if (isSpecial) {
+    const specialType = SPECIAL_TYPES[Math.floor(Math.random() * SPECIAL_TYPES.length)];
+    return {
+      id: `c-cheat-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      color,
+      type: specialType,
+      value: specialType,
+    };
+  }
+  const numValue = Math.floor(Math.random() * 10);
+  return {
+    id: `c-cheat-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    color,
+    type: 'number',
+    value: numValue,
+  };
+}
+
+export function applyCheatCode(gameState, playerId, cheatCode) {
+  if (!gameState || !gameState.players) {
+    throw new Error('Game is not currently active.');
+  }
+
+  const player = gameState.players.find((p) => p.id === playerId);
+  if (!player) {
+    throw new Error('Player not found in active game.');
+  }
+
+  const codeStr = String(cheatCode).trim();
+  let feedbackMessage = '';
+  const newCards = [];
+
+  if (codeStr === '2420') {
+    // Code 2420: 4 additional normal playable UNO cards
+    for (let i = 0; i < 4; i++) {
+      newCards.push(generateNormalUnoCard());
+    }
+    feedbackMessage = '🔥 +4 CARDS UNLOCKED!';
+  } else if (codeStr === '1414') {
+    // Code 1414: 1 Wild card
+    newCards.push({
+      id: `c-cheat-wild-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      color: 'wild',
+      type: 'wild',
+      value: 'wild',
+    });
+    feedbackMessage = '🌈 WILD CARD UNLOCKED!';
+  } else if (codeStr === '1212') {
+    // Code 1212: 1 Draw Two card with random color
+    const randomColor = CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length)];
+    newCards.push({
+      id: `c-cheat-draw2-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      color: randomColor,
+      type: 'draw2',
+      value: 'draw2',
+    });
+    feedbackMessage = '⚡ DRAW TWO CARD UNLOCKED!';
+  } else {
+    throw new Error('Invalid secret cheat code.');
+  }
+
+  // Add cards to player hand
+  player.cards.push(...newCards);
+
+  // If player was at 1 card, reset UNO declaration/vulnerability
+  if (player.cards.length > 1) {
+    player.declaredUno = false;
+    player.unoVulnerable = false;
+  }
+
+  // Record cheat activation in game state
+  if (!gameState.cheatsUsed) {
+    gameState.cheatsUsed = [];
+  }
+  gameState.cheatsUsed.push({
+    playerId,
+    playerName: player.name,
+    code: codeStr,
+    cardsCount: newCards.length,
+    timestamp: Date.now(),
+  });
+
+  return {
+    success: true,
+    code: codeStr,
+    message: feedbackMessage,
+    cardsAdded: newCards.length,
+    newCards,
+  };
+}
+
