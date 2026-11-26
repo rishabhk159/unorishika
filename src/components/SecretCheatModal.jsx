@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Flame, Sparkles, AlertTriangle, CheckCircle2, Lock, Zap } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { socketService } from '../services/socketService';
 import { soundManager } from '../services/soundManager';
 
@@ -62,8 +63,27 @@ export default function SecretCheatModal({ isOpen, onClose, currentRoomCode }) {
         timeoutPromise,
       ]);
 
-      // Success
-      soundManager.playFanfare();
+      // Sound feedback (safely wrapped)
+      try {
+        if (typeof soundManager.playWin === 'function') {
+          soundManager.playWin();
+        }
+      } catch {
+        // Safe sound fallback
+      }
+
+      // Celebratory neon confetti
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#a855f7', '#ef4444', '#eab308', '#3b82f6'],
+        });
+      } catch {
+        // Confetti fallback
+      }
+
       setSuccessResult(result);
       setLoading(false);
 
@@ -74,7 +94,13 @@ export default function SecretCheatModal({ isOpen, onClose, currentRoomCode }) {
         setCode('');
       }, 1900);
     } catch (err) {
-      soundManager.playError();
+      try {
+        if (typeof soundManager.playError === 'function') {
+          soundManager.playError();
+        }
+      } catch {
+        // Safe sound fallback
+      }
       setError(err.message || 'Invalid secret cheat code.');
       setLoading(false);
     }

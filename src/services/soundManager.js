@@ -104,6 +104,10 @@ class SoundManager {
     });
   }
 
+  playFanfare() {
+    this.playWin();
+  }
+
   playError() {
     this.playTone(180, 'sawtooth', 0.22, 0.3, 110);
   }
