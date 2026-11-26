@@ -552,7 +552,18 @@ class SocketService {
         return reject(new Error('Server is currently offline. Please wait for reconnection.'));
       }
 
+      let answered = false;
+      const timer = setTimeout(() => {
+        if (!answered) {
+          answered = true;
+          reject(new Error('Server response timed out. Ensure the backend has updated.'));
+        }
+      }, 6000);
+
       this.socket.emit('activate_cheat', { roomCode: targetRoom, code }, (response) => {
+        if (answered) return;
+        answered = true;
+        clearTimeout(timer);
         if (response?.success) {
           resolve(response);
         } else {

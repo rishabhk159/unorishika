@@ -16,6 +16,8 @@ export default function App() {
 
   // Hide header footer in actual match game if desired, or keep navbar for easy exit
   const isMatchRunning = location.pathname.startsWith('/game/');
+  const roomMatch = location.pathname.match(/\/game\/([A-Za-z0-9]+)/);
+  const currentRoomCode = roomMatch ? roomMatch[1].toUpperCase() : '';
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070A0F] text-slate-100 font-sans">
@@ -50,6 +52,7 @@ export default function App() {
       <SecretCheatModal
         isOpen={isCheatOpen}
         onClose={() => setIsCheatOpen(false)}
+        currentRoomCode={currentRoomCode}
       />
     </div>
   );

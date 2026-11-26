@@ -50,7 +50,17 @@ export default function SecretCheatModal({ isOpen, onClose, currentRoomCode }) {
         throw new Error('Cheat codes can only be used during an active game. Join or create a match first!');
       }
 
-      const result = await socketService.activateCheat(roomCode, code.trim());
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error('Server took too long to respond. Please try again.')),
+          6000
+        )
+      );
+
+      const result = await Promise.race([
+        socketService.activateCheat(roomCode, code.trim()),
+        timeoutPromise,
+      ]);
 
       // Success
       soundManager.playFanfare();
@@ -80,12 +90,12 @@ export default function SecretCheatModal({ isOpen, onClose, currentRoomCode }) {
         <div className="absolute -top-20 -left-20 w-44 h-44 bg-purple-600/30 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -right-20 w-44 h-44 bg-red-600/30 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Close Button */}
+        {/* Close Button - Always clickable */}
         <button
           onClick={onClose}
-          disabled={loading}
+          type="button"
           aria-label="Close"
-          className="absolute top-5 right-5 p-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-400 hover:text-white transition disabled:opacity-50"
+          className="absolute top-5 right-5 p-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-400 hover:text-white transition cursor-pointer z-10"
         >
           <X className="w-5 h-5" />
         </button>
@@ -183,8 +193,7 @@ export default function SecretCheatModal({ isOpen, onClose, currentRoomCode }) {
               <button
                 type="button"
                 onClick={onClose}
-                disabled={loading}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition"
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition cursor-pointer"
               >
                 Cancel
               </button>

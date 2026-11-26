@@ -24,6 +24,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     game: 'UNO RISHIKA Real-Time Server',
+    version: '1.1.0-cheat-mode',
     uptime: Math.floor(process.uptime()),
     activeRooms: roomManager.rooms.size,
     timestamp: new Date().toISOString(),
